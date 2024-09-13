@@ -12,7 +12,7 @@ function Home() {
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <BookIcon className="h-6 w-6" />
-            <span className="text-lg font-semibold">Biblioteca Pública Central</span>
+            <span className="text-lg font-semibold">BiblioNet</span>
           </div>
           <Link to={"/login"}>
               <Button variant="secondary" size="sm" className="flex items-center">

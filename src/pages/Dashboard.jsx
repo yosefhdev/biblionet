@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Book, Users, BookOpen, UserCheck, Plus, Edit, Trash, LogOut, Menu, ChevronDown } from "lucide-react"
@@ -62,6 +62,7 @@ function Dashboard() {
 
     const [activeSection, setActiveSection] = useState("libros")
     const [data, setData] = useState(initialData)
+    // eslint-disable-next-line no-unused-vars
     const [editItem, setEditItem] = useState(null)
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [searchTerm, setSearchTerm] = useState("")
