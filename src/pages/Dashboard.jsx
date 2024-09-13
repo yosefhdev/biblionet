@@ -19,6 +19,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet"
+import { Link } from "react-router-dom"
 
 const initialData = {
     personal: [
@@ -211,10 +212,12 @@ function Dashboard() {
                                 {renderNavigation()}
                             </nav>
                         </div>
-                        <Button variant="outline" onClick={handleLogout}>
-                            <LogOut className="mr-2 h-4 w-4" />
-                            Cerrar sesión
-                        </Button>
+                        <Link to={"/"}>
+                            <Button variant="outline" onClick={handleLogout}>
+                                <LogOut className="mr-2 h-4 w-4" />
+                                Cerrar sesión
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             </header>
