@@ -8,6 +8,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { EyeIcon, EyeOffIcon } from "lucide-react"
 import { IconArrowNarrowLeft } from '@tabler/icons-react';
 
+// tempotal
+import {createUser} from '~/utils/createUser';
+
 function Login() {
 
     const [showPassword, setShowPassword] = useState(false)
@@ -29,6 +32,18 @@ function Login() {
         } else {
             navigate('/dashboard');
         }
+    };
+
+    // Función temporal para crear un usuario
+    const handleCreateUser = () => {
+        createUser({
+            nombre: 'José Ramón',
+            apellido: 'Tejeda Navarro',
+            cargo: 'Administrador',
+            fecha_contratacion: '2024-09-12',
+            email: 'yosefhknt@gmail.com',
+            password: 'Kukyguapa100',
+        });
     };
 
     return (
@@ -89,6 +104,17 @@ function Login() {
                     </Link>
                 </CardFooter>
             </Card>
+            {/* Botón temporal para crear un usuario */}
+            <div className='flex flex-col'>
+                <button type="button" onClick={handleCreateUser}>
+                    Crear Usuario Admin
+                </button>
+                <Link to={"/dashboard"}>
+                    <button type="button" >
+                        Ir a Dashboard
+                    </button>
+                </Link>
+            </div>
         </div>
     );
 }
