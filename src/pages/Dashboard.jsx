@@ -48,6 +48,7 @@ function Dashboard() {
 
     const [activeSection, setActiveSection] = useState("personal")
     const [data, setData] = useState(initialData)
+    // eslint-disable-next-line no-unused-vars
     const [editItem, setEditItem] = useState(null)
     const [isMenuOpen, setIsMenuOpen] = useState(false)
 
