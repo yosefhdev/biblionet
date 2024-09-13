@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom';
-import { supabase } from '../supabase/supabaseClient';
+import { supabase } from '~/utils/supabase';
 import PropTypes from 'prop-types';
 
 function ProtectedRoute({ children }) {
