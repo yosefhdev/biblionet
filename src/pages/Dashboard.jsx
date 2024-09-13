@@ -1,8 +1,7 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Book, Users, BookOpen, UserCheck, Plus, Edit, Trash, LogOut, Menu } from "lucide-react"
+import { Book, Users, BookOpen, UserCheck, Plus, Edit, Trash, LogOut, Menu, ChevronDown } from "lucide-react"
 import {
     Dialog,
     DialogContent,
@@ -19,6 +18,20 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet"
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
+import {
+    DropdownMenu,
+    DropdownMenuCheckboxItem,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Link } from "react-router-dom"
 
 const initialData = {
@@ -28,9 +41,11 @@ const initialData = {
         { id: 3, nombre: "María López", cargo: "Encargada de TI", antiguedad: "3 años" },
     ],
     libros: [
-        { id: 1, titulo: "Cien años de soledad", autor: "Gabriel García Márquez", copias: 3 },
-        { id: 2, titulo: "1984", autor: "George Orwell", copias: 2 },
-        { id: 3, titulo: "El principito", autor: "Antoine de Saint-Exupéry", copias: 4 },
+        { id: 1, titulo: "Cien años de soledad", autor: "Gabriel García Márquez", genero: "Realismo mágico", anioPublicacion: 1967, isbn: "978-0307474728", copias: 3 },
+        { id: 2, titulo: "1984", autor: "George Orwell", genero: "Ciencia ficción", anioPublicacion: 1949, isbn: "978-0451524935", copias: 2 },
+        { id: 3, titulo: "El principito", autor: "Antoine de Saint-Exupéry", genero: "Literatura infantil", anioPublicacion: 1943, isbn: "978-0156012195", copias: 4 },
+        { id: 4, titulo: "Don Quijote de la Mancha", autor: "Miguel de Cervantes", genero: "Novela", anioPublicacion: 1605, isbn: "978-8424922580", copias: 2 },
+        { id: 5, titulo: "Orgullo y prejuicio", autor: "Jane Austen", genero: "Novela romántica", anioPublicacion: 1813, isbn: "978-0141439518", copias: 3 },
     ],
     prestamos: [
         { id: 1, libro: "Cien años de soledad", cliente: "Juan Rodríguez", fechaPrestamo: "2023-05-01", fechaDevolucion: "2023-05-15" },
@@ -43,14 +58,16 @@ const initialData = {
         { id: 3, nombre: "Pedro Gómez", email: "pedro@example.com", librosPrestados: 1 },
     ],
 }
-
 function Dashboard() {
 
-    const [activeSection, setActiveSection] = useState("personal")
+    const [activeSection, setActiveSection] = useState("libros")
     const [data, setData] = useState(initialData)
-    // eslint-disable-next-line no-unused-vars
     const [editItem, setEditItem] = useState(null)
     const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const [searchTerm, setSearchTerm] = useState("")
+    const [currentPage, setCurrentPage] = useState(1)
+    const [itemsPerPage, setItemsPerPage] = useState(5)
+    const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' })
 
     const handleAdd = (newItem) => {
         setData((prevData) => ({
@@ -82,6 +99,21 @@ function Dashboard() {
     const handleSectionChange = (section) => {
         setActiveSection(section)
         setIsMenuOpen(false)
+        setSearchTerm("")
+        setCurrentPage(1)
+    }
+
+    const handleSearch = (e) => {
+        setSearchTerm(e.target.value)
+        setCurrentPage(1)
+    }
+
+    const handleSort = (key) => {
+        let direction = 'ascending';
+        if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+            direction = 'descending';
+        }
+        setSortConfig({ key, direction });
     }
 
     const renderForm = (item = null, onSubmit) => {
@@ -109,53 +141,144 @@ function Dashboard() {
         )
     }
 
+    const filteredData = data[activeSection].filter((item) => {
+        if (activeSection === "libros") {
+            return Object.values(item).some(
+                (value) =>
+                    value &&
+                    value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+        return true;
+    });
+
+    const sortedData = [...filteredData].sort((a, b) => {
+        if (sortConfig.key) {
+            const aValue = a[sortConfig.key];
+            const bValue = b[sortConfig.key];
+            if (aValue < bValue) {
+                return sortConfig.direction === 'ascending' ? -1 : 1;
+            }
+            if (aValue > bValue) {
+                return sortConfig.direction === 'ascending' ? 1 : -1;
+            }
+        }
+        return 0;
+    });
+
+    const paginatedData = sortedData.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
+
+    const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+
     const renderTable = () => {
-        const tableData = data[activeSection]
+        const tableData = paginatedData
+        const headers = Object.keys(data[activeSection][0]).filter(key => key !== "id")
+
         return (
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        {Object.keys(tableData[0]).filter(key => key !== "id").map((key) => (
-                            <TableHead key={key} className="capitalize">
-                                {key}
-                            </TableHead>
-                        ))}
-                        <TableHead>Acciones</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {tableData.map((item) => (
-                        <TableRow key={item.id}>
-                            {Object.entries(item).filter(([key]) => key !== "id").map(([key, value]) => (
-                                <TableCell key={key}>{value}</TableCell>
+            <div>
+                <div className="flex justify-between items-center mb-4">
+                    <Input
+                        placeholder="Buscar..."
+                        value={searchTerm}
+                        onChange={handleSearch}
+                        className="max-w-sm"
+                    />
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="ml-auto">
+                                Mostrar {itemsPerPage} <ChevronDown className="ml-2 h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            {[5, 10, 20, 30, 40, 50].map((pageSize) => (
+                                <DropdownMenuCheckboxItem
+                                    key={pageSize}
+                                    className="capitalize"
+                                    checked={itemsPerPage === pageSize}
+                                    onCheckedChange={() => setItemsPerPage(pageSize)}
+                                >
+                                    {pageSize}
+                                </DropdownMenuCheckboxItem>
                             ))}
-                            <TableCell>
-                                <div className="flex space-x-2">
-                                    <Dialog>
-                                        <DialogTrigger asChild>
-                                            <Button variant="outline" size="icon" onClick={() => setEditItem(item)}>
-                                                <Edit className="h-4 w-4" />
-                                            </Button>
-                                        </DialogTrigger>
-                                        <DialogContent>
-                                            <DialogHeader>
-                                                <DialogTitle>Editar {activeSection.slice(0, -1)}</DialogTitle>
-                                            </DialogHeader>
-                                            {renderForm(item, (editedItem) => {
-                                                handleEdit(editedItem)
-                                                setEditItem(null)
-                                            })}
-                                        </DialogContent>
-                                    </Dialog>
-                                    <Button variant="outline" size="icon" onClick={() => handleDelete(item.id)}>
-                                        <Trash className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            </TableCell>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            {headers.map((header) => (
+                                <TableHead
+                                    key={header}
+                                    className="capitalize cursor-pointer"
+                                    onClick={() => handleSort(header)}
+                                >
+                                    {header}
+                                    {sortConfig.key === header && (
+                                        <span>{sortConfig.direction === 'ascending' ? ' ▲' : ' ▼'}</span>
+                                    )}
+                                </TableHead>
+                            ))}
+                            <TableHead>Acciones</TableHead>
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+                    </TableHeader>
+                    <TableBody>
+                        {tableData.map((item) => (
+                            <TableRow key={item.id}>
+                                {headers.map((header) => (
+                                    <TableCell key={header}>{item[header]}</TableCell>
+                                ))}
+                                <TableCell>
+                                    <div className="flex space-x-2">
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <Button variant="outline" size="icon" onClick={() => setEditItem(item)}>
+                                                    <Edit className="h-4 w-4" />
+                                                </Button>
+                                            </DialogTrigger>
+                                            <DialogContent>
+                                                <DialogHeader>
+                                                    <DialogTitle>Editar {activeSection.slice(0, -1)}</DialogTitle>
+                                                </DialogHeader>
+                                                {renderForm(item, (editedItem) => {
+                                                    handleEdit(editedItem)
+                                                    setEditItem(null)
+                                                })}
+                                            </DialogContent>
+                                        </Dialog>
+                                        <Button variant="outline" size="icon" onClick={() => handleDelete(item.id)}>
+                                            <Trash className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                <div className="flex items-center justify-end space-x-2 py-4">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage((old) => Math.max(old - 1, 1))}
+                        disabled={currentPage === 1}
+                    >
+                        Anterior
+                    </Button>
+                    <div>
+                        Página {currentPage} de {totalPages}
+                    </div>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage((old) => Math.min(old + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                    >
+                        Siguiente
+                    </Button>
+                </div>
+            </div>
         )
     }
 
