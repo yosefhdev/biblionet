@@ -1,7 +1,7 @@
-import { useState } from "react"
+/* eslint-disable no-unused-vars */
+import DataTable from "@/components/DataTable"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Book, Users, BookOpen, UserCheck, Plus, Edit, Trash, LogOut, Menu, ChevronDown } from "lucide-react"
 import {
     Dialog,
     DialogContent,
@@ -9,8 +9,8 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import {
     Sheet,
     SheetContent,
@@ -18,270 +18,335 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet"
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { Book, BookOpen, LogOut, Menu, Plus, UserCheck, Users } from "lucide-react"
+import { useEffect, useState } from "react"
+import { set } from "react-hook-form"
 import { Link } from "react-router-dom"
+import LibrosModal from "~/components/LibrosModal"
+import PersonalModal from "~/components/PersonalModal"
 
-const initialData = {
-    personal: [
-        { id: 1, nombre: "Ana García", cargo: "Bibliotecaria", antiguedad: "5 años" },
-        { id: 2, nombre: "Carlos Pérez", cargo: "Asistente", antiguedad: "2 años" },
-        { id: 3, nombre: "María López", cargo: "Encargada de TI", antiguedad: "3 años" },
-    ],
-    libros: [
-        { id: 1, titulo: "Cien años de soledad", autor: "Gabriel García Márquez", genero: "Realismo mágico", anioPublicacion: 1967, isbn: "978-0307474728", copias: 3 },
-        { id: 2, titulo: "1984", autor: "George Orwell", genero: "Ciencia ficción", anioPublicacion: 1949, isbn: "978-0451524935", copias: 2 },
-        { id: 3, titulo: "El principito", autor: "Antoine de Saint-Exupéry", genero: "Literatura infantil", anioPublicacion: 1943, isbn: "978-0156012195", copias: 4 },
-        { id: 4, titulo: "Don Quijote de la Mancha", autor: "Miguel de Cervantes", genero: "Novela", anioPublicacion: 1605, isbn: "978-8424922580", copias: 2 },
-        { id: 5, titulo: "Orgullo y prejuicio", autor: "Jane Austen", genero: "Novela romántica", anioPublicacion: 1813, isbn: "978-0141439518", copias: 3 },
-    ],
-    prestamos: [
-        { id: 1, libro: "Cien años de soledad", cliente: "Juan Rodríguez", fechaPrestamo: "2023-05-01", fechaDevolucion: "2023-05-15" },
-        { id: 2, libro: "1984", cliente: "Laura Sánchez", fechaPrestamo: "2023-05-03", fechaDevolucion: "2023-05-17" },
-        { id: 3, libro: "El principito", cliente: "Pedro Gómez", fechaPrestamo: "2023-05-05", fechaDevolucion: "2023-05-19" },
-    ],
-    clientes: [
-        { id: 1, nombre: "Juan Rodríguez", email: "juan@example.com", librosPrestados: 1 },
-        { id: 2, nombre: "Laura Sánchez", email: "laura@example.com", librosPrestados: 1 },
-        { id: 3, nombre: "Pedro Gómez", email: "pedro@example.com", librosPrestados: 1 },
-    ],
-}
+const personal = [
+    { id: 1, nombre: "Ana García", cargo: "Bibliotecaria", antiguedad: "5 años" },
+    { id: 2, nombre: "Carlos Pérez", cargo: "Asistente", antiguedad: "2 años" },
+    { id: 3, nombre: "María López", cargo: "Encargada de TI", antiguedad: "3 años" },
+]
+const libros = [
+    { id: 1, titulo: "Cien años de soledad", autor: "Gabriel García Márquez", genero: "Realismo mágico", anioPublicacion: 1967, isbn: "978-0307474728", copias: 3 },
+    { id: 2, titulo: "1984", autor: "George Orwell", genero: "Ciencia ficción", anioPublicacion: 1949, isbn: "978-0451524935", copias: 2 },
+    { id: 3, titulo: "El principito", autor: "Antoine de Saint-Exupéry", genero: "Literatura infantil", anioPublicacion: 1943, isbn: "978-0156012195", copias: 4 },
+    { id: 4, titulo: "Don Quijote de la Mancha", autor: "Miguel de Cervantes", genero: "Novela", anioPublicacion: 1605, isbn: "978-8424922580", copias: 2 },
+    { id: 5, titulo: "Orgullo y prejuicio", autor: "Jane Austen", genero: "Novela romántica", anioPublicacion: 1813, isbn: "978-0141439518", copias: 3 },
+]
+const prestamos = [
+    { id: 1, libro: "Cien años de soledad", cliente: "Juan Rodríguez", fechaPrestamo: "2023-05-01", fechaDevolucion: "2023-05-15" },
+    { id: 2, libro: "1984", cliente: "Laura Sánchez", fechaPrestamo: "2023-05-03", fechaDevolucion: "2023-05-17" },
+    { id: 3, libro: "El principito", cliente: "Pedro Gómez", fechaPrestamo: "2023-05-05", fechaDevolucion: "2023-05-19" },
+]
+const clientes = [
+    { id: 1, nombre: "Juan Rodríguez", email: "juan@example.com", librosPrestados: 1 },
+    { id: 2, nombre: "Laura Sánchez", email: "laura@example.com", librosPrestados: 1 },
+    { id: 3, nombre: "Pedro Gómez", email: "pedro@example.com", librosPrestados: 1 },
+]
+
+// Columnas de la tabla
+const columnsPersonal = [
+    {
+        accessorKey: "id",
+        header: "ID",
+        cell: "id",
+    },
+    {
+        accessorKey: "nombre",
+        header: "Nombre",
+        cell: "text",
+    },
+    {
+        accessorKey: "cargo",
+        header: "Cargo",
+        cell: "text",
+    },
+    {
+        accessorKey: "antiguedad",
+        header: "Antigüedad",
+        cell: "text",
+    },
+]
+
+const columnsLibros = [
+    {
+        accessorKey: "id",
+        header: "ID",
+        cell: "id",
+    },
+    {
+        accessorKey: "titulo",
+        header: "Título",
+        cell: "text",
+    },
+    {
+        accessorKey: "autor",
+        header: "Autor",
+        cell: "text",
+    },
+    {
+        accessorKey: "genero",
+        header: "Género",
+        cell: "text",
+    },
+    {
+        accessorKey: "anioPublicacion",
+        header: "Año de publicación",
+        cell: "text",
+    },
+    {
+        accessorKey: "isbn",
+        header: "ISBN",
+        cell: "text",
+    },
+    {
+        accessorKey: "copias",
+        header: "Copias",
+        cell: "text",
+    },
+]
+
+const columnsPrestamos = [
+    {
+        accessorKey: "id",
+        header: "ID",
+        cell: "id",
+    },
+    {
+        accessorKey: "libro",
+        header: "Libro",
+        cell: "text",
+    },
+    {
+        accessorKey: "cliente",
+        header: "Cliente",
+        cell: "text",
+    },
+    {
+        accessorKey: "fechaPrestamo",
+        header: "Fecha de préstamo",
+        cell: "text",
+    },
+    {
+        accessorKey: "fechaDevolucion",
+        header: "Fecha de devolución",
+        cell: "text",
+    },
+]
+
+const columnsClientes = [
+    {
+        accessorKey: "id",
+        header: "ID",
+        cell: "id",
+    },
+    {
+        accessorKey: "nombre",
+        header: "Nombre",
+        cell: "text",
+    },
+    {
+        accessorKey: "email",
+        header: "Correo electrónico",
+        cell: "text",
+    },
+    {
+        accessorKey: "librosPrestados",
+        header: "Libros prestados",
+        cell: "text",
+    },
+]
+
+
 function Dashboard() {
-
-    const [activeSection, setActiveSection] = useState("libros")
-    const [data, setData] = useState(initialData)
-    // eslint-disable-next-line no-unused-vars
-    const [editItem, setEditItem] = useState(null)
-    const [isMenuOpen, setIsMenuOpen] = useState(false)
-    const [searchTerm, setSearchTerm] = useState("")
-    const [currentPage, setCurrentPage] = useState(1)
-    const [itemsPerPage, setItemsPerPage] = useState(5)
-    const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' })
-
-    const handleAdd = (newItem) => {
-        setData((prevData) => ({
-            ...prevData,
-            [activeSection]: [...prevData[activeSection], { id: Date.now(), ...newItem }],
-        }))
-    }
-
-    const handleEdit = (editedItem) => {
-        setData((prevData) => ({
-            ...prevData,
-            [activeSection]: prevData[activeSection].map((item) =>
-                item.id === editedItem.id ? editedItem : item
-            ),
-        }))
-    }
-
-    const handleDelete = (id) => {
-        setData((prevData) => ({
-            ...prevData,
-            [activeSection]: prevData[activeSection].filter((item) => item.id !== id),
-        }))
-    }
+    const [activeSection, setActiveSection] = useState("libros");
+    const [dataPersonal, setDataPersonal] = useState(personal);
+    const [dataLibros, setDataLibros] = useState(libros);
+    const [dataPrestamos, setDataPrestamos] = useState(prestamos);
+    const [dataClientes, setDataClientes] = useState(clientes);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    // States para el elemento seleccionado
+    let [selectedPersonal, setSelectedPersonal] = useState(null);
+    let [selectedLibro, setSelectedLibro] = useState(null);
+    let [selectedPrestamo, setSelectedPrestamo] = useState(null);
+    let [selectedCliente, setSelectedCliente] = useState(null);
+    // States para modales
+    const [showPersonalModal, setShowPersonalModal] = useState(false);
+    const [showLibrosModal, setShowLibrosModal] = useState(false);
+    const [showPrestamosModal, setShowPrestamosModal] = useState(false);
+    const [showClientesModal, setShowClientesModal] = useState(false);
+    // accion
+    const [accion, setAccion] = useState("add");
 
     const handleLogout = () => {
-        console.log("Cerrando sesión...")
-    }
+        console.log("Cerrando sesión...");
+    };
+
+    const handleMenuToggle = () => {
+        setIsMenuOpen(prev => !prev);
+    };
+
+    // Funciones para manejar datos
+    const handleAdd = (section, newItem) => {
+        setAccion("add");
+        switch (section) {
+            case "personal":
+                setSelectedPersonal(null);
+                setShowPersonalModal(true);
+                break;
+            case "libros":
+                setSelectedLibro(null);
+                setShowLibrosModal(true);
+                break;
+            case "prestamos":
+                setDataPrestamos([...dataPrestamos, { id: Date.now(), ...newItem }]);
+                break;
+            case "clientes":
+                setDataClientes([...dataClientes, { id: Date.now(), ...newItem }]);
+                break;
+            default:
+                break;
+        }
+    };
+
+    useEffect(() => {
+        if (selectedPersonal) {
+            setShowPersonalModal(true);
+        }
+    }, [selectedPersonal]);
+
+    useEffect(() => {
+        if (selectedLibro) {
+            setShowLibrosModal(true);
+        }
+    }, [selectedLibro]);
+
+    const handleEdit = (section, editedItem) => {
+        setAccion("edit");
+        switch (section) {
+            case "personal":
+                setSelectedPersonal(editedItem);  // Solo asigna el item seleccionado
+                // setShowPersonalModal(true);       // Abre el modal
+                break;
+            case "libros":
+                setSelectedLibro(editedItem);     // Solo asigna el item seleccionado
+                // setShowLibrosModal(true);         // Abre el modal
+                break;
+            case "prestamos":
+                setSelectedPrestamo(editedItem);  // Asigna el préstamo seleccionado
+                setShowPrestamosModal(true);      // Abre el modal
+                break;
+            case "clientes":
+                setSelectedCliente(editedItem);   // Asigna el cliente seleccionado
+                setShowClientesModal(true);       // Abre el modal
+                break;
+            default:
+                break;
+        }
+    };
+
+    const handleDelete = (section, id) => {
+        switch (section) {
+            case "personal":
+                setDataPersonal(dataPersonal.filter(item => item.id !== id));
+                break;
+            case "libros":
+                setDataLibros(dataLibros.filter(item => item.id !== id));
+                break;
+            case "prestamos":
+                setDataPrestamos(dataPrestamos.filter(item => item.id !== id));
+                break;
+            case "clientes":
+                setDataClientes(dataClientes.filter(item => item.id !== id));
+                break;
+            default:
+                break;
+        }
+    };
+
+    const renderDataTable = () => {
+        switch (activeSection) {
+            case "personal":
+                return (
+                    <>
+                        {dataPersonal.length > 0 ? (
+                            <DataTable
+                                data={dataPersonal}
+                                columns={columnsPersonal}
+                                onAdd={newItem => handleAdd(activeSection, newItem)}
+                                onEdit={editedItem => handleEdit(activeSection, editedItem)}
+                                onDelete={id => handleDelete(activeSection, id)}
+
+                            />
+                        ) : (
+                            <div className="text-center text-muted-foreground">No hay personal registrado</div>
+                        )}
+                    </>
+                );
+            case "libros":
+                return (
+                    <>
+                        {dataLibros.length > 0 ? (
+                            <DataTable
+                                data={dataLibros}
+                                columns={columnsLibros}
+                                headers={Object.keys(dataLibros[0]).filter(key => key !== 'id')}
+                                onAdd={newItem => handleAdd(activeSection, newItem)}
+                                onEdit={editedItem => handleEdit(activeSection, editedItem)}
+                                onDelete={id => handleDelete(activeSection, id)}
+                            />
+                        ) : (
+                            <div className="text-center text-muted-foreground">No hay libros registrados</div>
+                        )}
+                    </>
+                );
+            case "prestamos":
+                return (
+                    <>
+                        {dataPrestamos.length > 0 ? (
+                            <DataTable
+                                data={dataPrestamos}
+                                columns={columnsPrestamos}
+                                headers={Object.keys(dataPrestamos[0]).filter(key => key !== 'id')}
+                                onAdd={newItem => handleAdd(activeSection, newItem)}
+                                onEdit={editedItem => handleEdit(activeSection, editedItem)}
+                                onDelete={id => handleDelete(activeSection, id)}
+                            />
+                        ) : (
+                            <div className="text-center text-muted-foreground">No hay préstamos registrados</div>
+                        )}
+                    </>
+                );
+            case "clientes":
+                return (
+                    <>
+                        {dataClientes.length > 0 ? (
+                            <DataTable
+                                data={dataClientes}
+                                columns={columnsClientes}
+                                headers={Object.keys(dataClientes[0]).filter(key => key !== 'id')}
+                                onAdd={newItem => handleAdd(activeSection, newItem)}
+                                onEdit={editedItem => handleEdit(activeSection, editedItem)}
+                                onDelete={id => handleDelete(activeSection, id)}
+                            />
+
+                        ) : (
+                            <div className="text-center text-muted-foreground">No hay préstamos registrados</div>
+                        )}
+                    </>
+                );
+            default:
+                return null;
+        }
+    };
 
     const handleSectionChange = (section) => {
-        setActiveSection(section)
-        setIsMenuOpen(false)
-        setSearchTerm("")
-        setCurrentPage(1)
-    }
-
-    const handleSearch = (e) => {
-        setSearchTerm(e.target.value)
-        setCurrentPage(1)
-    }
-
-    const handleSort = (key) => {
-        let direction = 'ascending';
-        if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-            direction = 'descending';
-        }
-        setSortConfig({ key, direction });
-    }
-
-    const renderForm = (item = null, onSubmit) => {
-        const fields = Object.keys(data[activeSection][0]).filter((key) => key !== "id")
-        return (
-            <form onSubmit={(e) => {
-                e.preventDefault()
-                const formData = new FormData(e.target)
-                const newItem = Object.fromEntries(formData.entries())
-                onSubmit(item ? { ...item, ...newItem } : newItem)
-            }} className="space-y-4">
-                {fields.map((field) => (
-                    <div key={field}>
-                        <Label htmlFor={field} className="capitalize">{field}</Label>
-                        <Input
-                            id={field}
-                            name={field}
-                            defaultValue={item ? item[field] : ""}
-                            required
-                        />
-                    </div>
-                ))}
-                <Button type="submit">{item ? "Guardar cambios" : "Agregar"}</Button>
-            </form>
-        )
-    }
-
-    const filteredData = data[activeSection].filter((item) => {
-        if (activeSection === "libros") {
-            return Object.values(item).some(
-                (value) =>
-                    value &&
-                    value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-            );
-        }
-        return true;
-    });
-
-    const sortedData = [...filteredData].sort((a, b) => {
-        if (sortConfig.key) {
-            const aValue = a[sortConfig.key];
-            const bValue = b[sortConfig.key];
-            if (aValue < bValue) {
-                return sortConfig.direction === 'ascending' ? -1 : 1;
-            }
-            if (aValue > bValue) {
-                return sortConfig.direction === 'ascending' ? 1 : -1;
-            }
-        }
-        return 0;
-    });
-
-    const paginatedData = sortedData.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-    );
-
-    const totalPages = Math.ceil(sortedData.length / itemsPerPage);
-
-    const renderTable = () => {
-        const tableData = paginatedData
-        const headers = Object.keys(data[activeSection][0]).filter(key => key !== "id")
-
-        return (
-            <div>
-                <div className="flex justify-between items-center mb-4">
-                    <Input
-                        placeholder="Buscar..."
-                        value={searchTerm}
-                        onChange={handleSearch}
-                        className="max-w-sm"
-                    />
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="ml-auto">
-                                Mostrar {itemsPerPage} <ChevronDown className="ml-2 h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            {[5, 10, 20, 30, 40, 50].map((pageSize) => (
-                                <DropdownMenuCheckboxItem
-                                    key={pageSize}
-                                    className="capitalize"
-                                    checked={itemsPerPage === pageSize}
-                                    onCheckedChange={() => setItemsPerPage(pageSize)}
-                                >
-                                    {pageSize}
-                                </DropdownMenuCheckboxItem>
-                            ))}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            {headers.map((header) => (
-                                <TableHead
-                                    key={header}
-                                    className="capitalize cursor-pointer"
-                                    onClick={() => handleSort(header)}
-                                >
-                                    {header}
-                                    {sortConfig.key === header && (
-                                        <span>{sortConfig.direction === 'ascending' ? ' ▲' : ' ▼'}</span>
-                                    )}
-                                </TableHead>
-                            ))}
-                            <TableHead>Acciones</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {tableData.map((item) => (
-                            <TableRow key={item.id}>
-                                {headers.map((header) => (
-                                    <TableCell key={header}>{item[header]}</TableCell>
-                                ))}
-                                <TableCell>
-                                    <div className="flex space-x-2">
-                                        <Dialog>
-                                            <DialogTrigger asChild>
-                                                <Button variant="outline" size="icon" onClick={() => setEditItem(item)}>
-                                                    <Edit className="h-4 w-4" />
-                                                </Button>
-                                            </DialogTrigger>
-                                            <DialogContent>
-                                                <DialogHeader>
-                                                    <DialogTitle>Editar {activeSection.slice(0, -1)}</DialogTitle>
-                                                </DialogHeader>
-                                                {renderForm(item, (editedItem) => {
-                                                    handleEdit(editedItem)
-                                                    setEditItem(null)
-                                                })}
-                                            </DialogContent>
-                                        </Dialog>
-                                        <Button variant="outline" size="icon" onClick={() => handleDelete(item.id)}>
-                                            <Trash className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-                <div className="flex items-center justify-end space-x-2 py-4">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setCurrentPage((old) => Math.max(old - 1, 1))}
-                        disabled={currentPage === 1}
-                    >
-                        Anterior
-                    </Button>
-                    <div>
-                        Página {currentPage} de {totalPages}
-                    </div>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setCurrentPage((old) => Math.min(old + 1, totalPages))}
-                        disabled={currentPage === totalPages}
-                    >
-                        Siguiente
-                    </Button>
-                </div>
-            </div>
-        )
-    }
+        setActiveSection(section);
+    };
 
     const renderNavigation = () => (
         <>
@@ -310,7 +375,7 @@ function Dashboard() {
                 Clientes
             </Button>
         </>
-    )
+    );
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-100">
@@ -318,9 +383,15 @@ function Dashboard() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center py-6">
                         <div className="flex items-center">
+                            {/* Menú lateral para dispositivos móviles */}
                             <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                                 <SheetTrigger asChild>
-                                    <Button variant="outline" size="icon" className="mr-2 lg:hidden">
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="lg:hidden"
+                                        onClick={handleMenuToggle}
+                                    >
                                         <Menu className="h-4 w-4" />
                                     </Button>
                                 </SheetTrigger>
@@ -333,10 +404,14 @@ function Dashboard() {
                                     </nav>
                                 </SheetContent>
                             </Sheet>
+
+                            {/* Menú de navegación para pantallas grandes */}
                             <nav className="hidden lg:flex lg:space-x-4">
                                 {renderNavigation()}
                             </nav>
                         </div>
+
+                        {/* Botón de cerrar sesión */}
                         <Link to={"/"}>
                             <Button variant="outline" onClick={handleLogout}>
                                 <LogOut className="mr-2 h-4 w-4" />
@@ -348,7 +423,7 @@ function Dashboard() {
             </header>
             <main className="flex-grow py-6">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                    {/* <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                                 <CardTitle className="text-sm font-medium">Personal</CardTitle>
@@ -385,27 +460,31 @@ function Dashboard() {
                                 <div className="text-2xl font-bold">{data.clientes.length}</div>
                             </CardContent>
                         </Card>
-                    </div>
-                    <Card className="mt-6">
-                        <CardHeader className="flex justify-between items-center">
+                    </div> */}
+                    <Card>
+                        <CardHeader className="flex flex-row justify-between items-center">
                             <CardTitle className="capitalize">{activeSection}</CardTitle>
-                            <Dialog>
-                                <DialogTrigger asChild>
-                                    <Button>
-                                        <Plus className="mr-2 h-4 w-4" /> Agregar {activeSection.slice(0, -1)}
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>Agregar {activeSection.slice(0, -1)}</DialogTitle>
-                                    </DialogHeader>
-                                    {renderForm(null, handleAdd)}
-                                </DialogContent>
-                            </Dialog>
+                            <Button onClick={() => handleAdd(activeSection)}>
+                                <Plus className="mr-2 h-4 w-4" /> Agregar {activeSection.slice(0, -1)}
+                            </Button>
                         </CardHeader>
-                        <CardContent>{renderTable()}</CardContent>
+                        <CardContent>
+                            {renderDataTable()}
+                        </CardContent>
                     </Card>
                 </div>
+                {/* Modales */}
+                {/* <PersonalModal
+                    showModal={showPersonalModal}
+                    setShowModal={setShowPersonalModal}
+                    onAdd={newItem => handleAdd("personal", newItem)}
+                /> */}
+                <LibrosModal
+                    isOpen={showLibrosModal}
+                    onClose={() => setShowLibrosModal(false)}
+                    initialData={selectedLibro}
+                    accion={accion}
+                />
             </main>
         </div>
     );
