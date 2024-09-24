@@ -24,6 +24,8 @@ import { set } from "react-hook-form"
 import { Link } from "react-router-dom"
 import LibrosModal from "~/components/LibrosModal"
 import PersonalModal from "~/components/PersonalModal"
+import ClientesModal from "~/components/ClientesModal"
+import PrestamosModal from "~/components/PrestamosModal"
 
 const personal = [
     { id: 1, nombre: "Ana García", cargo: "Bibliotecaria", antiguedad: "5 años" },
@@ -203,10 +205,12 @@ function Dashboard() {
                 setShowLibrosModal(true);
                 break;
             case "prestamos":
-                setDataPrestamos([...dataPrestamos, { id: Date.now(), ...newItem }]);
+                setSelectedPrestamo(null);
+                setShowPrestamosModal(true);
                 break;
             case "clientes":
-                setDataClientes([...dataClientes, { id: Date.now(), ...newItem }]);
+                setSelectedCliente(null);
+                setShowClientesModal(true);
                 break;
             default:
                 break;
@@ -225,24 +229,32 @@ function Dashboard() {
         }
     }, [selectedLibro]);
 
+    useEffect(() => {
+        if (selectedPrestamo) {
+            setShowPrestamosModal(true);
+        }
+    }, [selectedPrestamo]);
+
+    useEffect(() => {
+        if (selectedCliente) {
+            setShowClientesModal(true);
+        }
+    }, [selectedCliente]);
+
     const handleEdit = (section, editedItem) => {
         setAccion("edit");
         switch (section) {
             case "personal":
                 setSelectedPersonal(editedItem);  // Solo asigna el item seleccionado
-                // setShowPersonalModal(true);       // Abre el modal
                 break;
             case "libros":
                 setSelectedLibro(editedItem);     // Solo asigna el item seleccionado
-                // setShowLibrosModal(true);         // Abre el modal
                 break;
             case "prestamos":
                 setSelectedPrestamo(editedItem);  // Asigna el préstamo seleccionado
-                setShowPrestamosModal(true);      // Abre el modal
                 break;
             case "clientes":
                 setSelectedCliente(editedItem);   // Asigna el cliente seleccionado
-                setShowClientesModal(true);       // Abre el modal
                 break;
             default:
                 break;
@@ -277,6 +289,7 @@ function Dashboard() {
                             <DataTable
                                 data={dataPersonal}
                                 columns={columnsPersonal}
+                                headers={Object.keys(dataPersonal[0]).filter(key => key !== 'id')}
                                 onAdd={newItem => handleAdd(activeSection, newItem)}
                                 onEdit={editedItem => handleEdit(activeSection, editedItem)}
                                 onDelete={id => handleDelete(activeSection, id)}
@@ -474,15 +487,28 @@ function Dashboard() {
                     </Card>
                 </div>
                 {/* Modales */}
-                {/* <PersonalModal
-                    showModal={showPersonalModal}
-                    setShowModal={setShowPersonalModal}
-                    onAdd={newItem => handleAdd("personal", newItem)}
-                /> */}
+                <PersonalModal
+                    isOpen={showPersonalModal}
+                    onClose={() => setShowPersonalModal(false)}
+                    initialData={selectedPersonal}
+                    accion={accion}
+                />
                 <LibrosModal
                     isOpen={showLibrosModal}
                     onClose={() => setShowLibrosModal(false)}
                     initialData={selectedLibro}
+                    accion={accion}
+                />
+                <PrestamosModal
+                    isOpen={showPrestamosModal}
+                    onClose={() => setShowPrestamosModal(false)}
+                    initialData={selectedPrestamo}
+                    accion={accion}
+                />
+                <ClientesModal
+                    isOpen={showClientesModal}
+                    onClose={() => setShowClientesModal(false)}
+                    initialData={selectedCliente}
                     accion={accion}
                 />
             </main>

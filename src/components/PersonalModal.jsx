@@ -1,52 +1,97 @@
-import { useEffect, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+/* eslint-disable react/prop-types */
+import { useEffect } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useForm } from "react-hook-form";
+import { Label } from "@/components/ui/label"
+import { UserIcon, UserPlusIcon, MapPinIcon, PhoneIcon, MailIcon } from "lucide-react"
 
-// eslint-disable-next-line react/prop-types
-const PersonalModal = ({ isOpen, onClose, onSubmit, initialData = {} }) => {
-    const [formData, setFormData] = useState(initialData);
+const PersonalModal = ({ isOpen, onClose, initialData, accion }) => {
+    const { register, handleSubmit, reset } = useForm({
+        defaultValues: initialData ?? {},
+    });
 
-    // Este efecto es necesario para actualizar el formulario si se recibe nueva data
+    // Resetear el formulario cuando initialData cambie
     useEffect(() => {
-        setFormData(initialData || {});
-    }, [initialData]);
+        reset(initialData);
+    }, [initialData, reset]);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
-
-    const handleSubmit = async () => {
+    const onSubmitForm = async (data) => {
         // Simular función de crear o editar datos
-        if (formData.id) {
-            // Editar
-            console.log("Editando personal:", formData);
+        if (data.id) {
+            console.log("Editando personal:", data);
             // Aquí iría el código para actualizar los datos en Supabase
         } else {
-            // Crear
-            console.log("Agregando nuevo personal:", formData);
+            console.log("Agregando Personal nuevo:", data);
             // Aquí iría el código para agregar datos a Supabase
         }
-        onSubmit(); // Llamar la función proporcionada cuando se complete la acción
         onClose(); // Cerrar el modal
     };
+
+    const FormInput = ({ id, label, icon, ...props }) => (
+        <div className="space-y-2">
+            <Label htmlFor={id}>{label}</Label>
+            <div className="relative">
+                {icon}
+                <Input id={id} {...register(id)} className="pl-10" required {...props} />
+            </div>
+        </div>
+    )
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>{formData.id ? "Editar Personal" : "Agregar Personal"}</DialogTitle>
+                    <DialogTitle>{accion == 'edit' ? "Editar Personal" : "Agregar Personal"}</DialogTitle>
                 </DialogHeader>
-                <div>
-                    <Input name="nombre" value={formData.nombre} onChange={handleChange} placeholder="Nombre" />
-                    <Input name="email" value={formData.email} onChange={handleChange} placeholder="Email" />
-                    {/* Añadir más campos según sea necesario */}
-                </div>
-                <DialogFooter>
-                    <Button variant="outline" onClick={handleSubmit}>Guardar</Button>
-                    <Button variant="outline" onClick={onClose}>Cerrar</Button>
-                </DialogFooter>
+                <form onSubmit={handleSubmit(onSubmitForm)} className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
+                    <h2 className="text-2xl font-bold text-center mb-6">Información del Libro</h2>
+                    <div className="grid grid-cols-2 gap-6">
+                        <FormInput
+                            id="nombre"
+                            label="Nombre"
+                            icon={<UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />}
+                            placeholder="Nombre del personal"
+                        />
+                        <FormInput
+                            id="apellido_p"
+                            label="Apellido Paterno"
+                            icon={<UserPlusIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />}
+                            placeholder="Apellido Paterno"
+                        />
+                        <FormInput
+                            id="apellido_m"
+                            label="Apellido Materno"
+                            icon={<UserPlusIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />}
+                            placeholder="Apellido Materno"
+                        />
+                        <FormInput
+                            id="direccion"
+                            label="Dirección"
+                            icon={<MapPinIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />}
+                            placeholder="Direccion"
+                        />
+                        <FormInput
+                            id="telefono"
+                            label="Telefono"
+                            icon={<PhoneIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />}
+                            placeholder="Telefono"
+                        />
+                        <FormInput
+                            id="correo"
+                            label="Correo"
+                            icon={<MailIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />}
+                            placeholder="Correo"
+                        />
+                    </div>
+                    <Button
+                        type="submit"
+                        className="w-full mt-6"
+                    >
+                        Guardar Libro
+                    </Button>
+                </form>
             </DialogContent>
         </Dialog>
     );
