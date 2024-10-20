@@ -45,7 +45,7 @@ const prestamos = [
     { id: 3, libro: "El principito", cliente: "Pedro Gómez", fechaPrestamo: "2023-05-05", fechaDevolucion: "2023-05-19" },
 ]
 const clientes = [
-    { id: 1, nombre: "Juan Rodríguez", email: "juan@example.com", librosPrestados: 1 },
+    { id: 1, nombre: "Juan Rodríguez Perez", email: "juan@example.com", librosPrestados: 1 },
     { id: 2, nombre: "Laura Sánchez", email: "laura@example.com", librosPrestados: 1 },
     { id: 3, nombre: "Pedro Gómez", email: "pedro@example.com", librosPrestados: 1 },
 ]
@@ -390,6 +390,9 @@ function Dashboard() {
         </>
     );
 
+
+
+    
     return (
         <div className="flex flex-col min-h-screen bg-gray-100">
             <header className="bg-white shadow-sm">
@@ -436,44 +439,6 @@ function Dashboard() {
             </header>
             <main className="flex-grow py-6">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    {/* <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                                <CardTitle className="text-sm font-medium">Personal</CardTitle>
-                                <Users className="w-4 h-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">{data.personal.length}</div>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                                <CardTitle className="text-sm font-medium">Libros</CardTitle>
-                                <Book className="w-4 h-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">{data.libros.length}</div>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                                <CardTitle className="text-sm font-medium">Préstamos</CardTitle>
-                                <BookOpen className="w-4 h-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">{data.prestamos.length}</div>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                                <CardTitle className="text-sm font-medium">Clientes</CardTitle>
-                                <UserCheck className="w-4 h-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">{data.clientes.length}</div>
-                            </CardContent>
-                        </Card>
-                    </div> */}
                     <Card>
                         <CardHeader className="flex flex-row justify-between items-center">
                             <CardTitle className="capitalize">{activeSection}</CardTitle>
