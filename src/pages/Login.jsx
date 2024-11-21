@@ -22,12 +22,15 @@ function Login() {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        const { error } = await supabase.auth.signIn({ email, password });
-
-        if (error) {
-            alert('Error de autenticación: ' + error.message);
-        } else {
+        console.log('Intentando iniciar sesión con:', email);
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            console.log('Respuesta de Supabase:', data);
             navigate('/dashboard');
+        } catch (error) {
+            console.error('Error detallado:', error);
+            alert('Error de autenticación: ' + error.message);
         }
     };
 
@@ -41,8 +44,8 @@ function Login() {
                         Ingresa tus credenciales para acceder
                     </CardDescription>
                 </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleLogin}>
+                <form onSubmit={handleLogin}>
+                    <CardContent>
                         <div className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="email">Correo electrónico</Label>
@@ -79,15 +82,17 @@ function Login() {
                                 </div>
                             </div>
                         </div>
-                    </form>
-                </CardContent>
-                <CardFooter className="flex flex-col gap-2">
-                    <Button className="w-full">Iniciar Sesión</Button>
-                    <Link to={"/"} className=" flex w-full items-center justify-center hover:underline">
-                        <IconArrowNarrowLeft stroke={2} />
-                        Volver al inicio
-                    </Link>
-                </CardFooter>
+                    </CardContent>
+                    <CardFooter className="flex flex-col gap-2">
+                        <Button type='submit' className="w-full">
+                            Iniciar Sesión
+                        </Button>
+                        <Link to={"/"} className=" flex w-full items-center justify-center hover:underline">
+                            <IconArrowNarrowLeft stroke={2} />
+                            Volver al inicio
+                        </Link>
+                    </CardFooter>
+                </form>
             </Card>
             <div className='flex flex-col'>
                 <Link to={"/dashboard"}>
