@@ -48,6 +48,7 @@ const PrestamosModal = ({ isOpen, onClose, initialData, accion }) => {
                     <h2 className="text-2xl font-bold text-center mb-6">Información del Libro</h2>
                     <div className="grid grid-cols-2 gap-6">
                         {/* Formulario Aqui */}
+                        
                     </div>
                     <Button
                         type="submit"
