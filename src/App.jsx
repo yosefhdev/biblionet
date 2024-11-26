@@ -8,19 +8,24 @@ import Dashboard from './pages/Dashboard'
 
 function App() {
 
-  return (
-    <Routes>
-      {/* Ruta publica */}
-      <Route path="/" element={<Home />} />
+	return (
+		<Routes>
+			{/* Ruta publica */}
+			<Route path="/" element={<Home />} />
 
-      {/* Ruta de Login */}
-      <Route path="/login" element={<Login />} />
+			{/* Ruta de Login */}
+			<Route path="/login" element={<Login />} />
 
-      {/* Rutas protegidas */}
-      <Route path="/dashboard" element={<div><Dashboard /></div>} />\
-      {/* <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} /> */}
-    </Routes>
-  )
+			{/* Rutas protegidas */}
+			<Route path="/dashboard" element={
+				<div>
+					<Dashboard
+					/>
+				</div>
+			} />\
+			{/* <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} /> */}
+		</Routes>
+	)
 }
 
 export default App

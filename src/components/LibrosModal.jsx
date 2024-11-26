@@ -7,27 +7,21 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { BookIcon, UserIcon, BookmarkIcon, CalendarIcon, HashIcon, CopyIcon } from "lucide-react"
 
-const LibrosModal = ({ isOpen, onClose, initialData, accion }) => {
+const LibrosModal = ({ isOpen, onClose, initialData, accion, onSave }) => {
     const { register, handleSubmit, reset } = useForm({
         defaultValues: initialData ?? {},
     });
 
     // Resetear el formulario cuando initialData cambie
     useEffect(() => {
-        reset(initialData);
-    }, [initialData, reset]);
+        reset(initialData)
+    }, [initialData, reset])
 
     const onSubmitForm = async (data) => {
-        // Simular función de crear o editar datos
-        if (data.id) {
-            console.log("Editando libro:", data);
-            // Aquí iría el código para actualizar los datos en Supabase
-        } else {
-            console.log("Agregando nuevo libro:", data);
-            // Aquí iría el código para agregar datos a Supabase
-        }
-        onClose(); // Cerrar el modal
-    };
+        await onSave(data)
+        onClose()
+    }
+
 
     const FormInput = ({ id, label, icon, ...props }) => (
         <div className="space-y-2">
@@ -69,7 +63,7 @@ const LibrosModal = ({ isOpen, onClose, initialData, accion }) => {
                             placeholder="Genero del libro"
                         />
                         <FormInput
-                            id="anioPublicacion"
+                            id="anio_publicacion"
                             label="Año de Publicación"
                             icon={<CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />}
                             type="number"

@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { UserIcon, UserPlusIcon, MapPinIcon, PhoneIcon, MailIcon } from "lucide-react"
 
 const ClientesModal = ({ isOpen, onClose, initialData, accion }) => {
     const { register, handleSubmit, reset } = useForm({
@@ -48,6 +49,42 @@ const ClientesModal = ({ isOpen, onClose, initialData, accion }) => {
                     <h2 className="text-2xl font-bold text-center mb-6">Información del Libro</h2>
                     <div className="grid grid-cols-2 gap-6">
                         {/* Formulario aqui */}
+                        <FormInput
+                            id="nombre"
+                            label="Nombre"
+                            icon={<UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />}
+                            placeholder="Nombre del personal"
+                        />
+                        <FormInput
+                            id="apellido_paterno"
+                            label="Apellido Paterno"
+                            icon={<UserPlusIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />}
+                            placeholder="Apellido Paterno"
+                        />
+                        <FormInput
+                            id="apellido_materno"
+                            label="Apellido Materno"
+                            icon={<UserPlusIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />}
+                            placeholder="Apellido Materno"
+                        />
+                        <FormInput
+                            id="direccion"
+                            label="Dirección"
+                            icon={<MapPinIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />}
+                            placeholder="Direccion"
+                        />
+                        <FormInput
+                            id="telefono"
+                            label="Telefono"
+                            icon={<PhoneIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />}
+                            placeholder="Telefono"
+                        />
+                        <FormInput
+                            id="email"
+                            label="Correo"
+                            icon={<MailIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />}
+                            placeholder="Correo"
+                        />
                     </div>
                     <Button
                         type="submit"

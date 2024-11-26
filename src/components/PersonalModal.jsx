@@ -46,7 +46,7 @@ const PersonalModal = ({ isOpen, onClose, initialData, accion }) => {
                     <DialogTitle>{accion == 'edit' ? "Editar Personal" : "Agregar Personal"}</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit(onSubmitForm)} className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
-                    <h2 className="text-2xl font-bold text-center mb-6">Información del Libro</h2>
+                    <h2 className="text-2xl font-bold text-center mb-6">Información del Personal</h2>
                     <div className="grid grid-cols-2 gap-6">
                         <FormInput
                             id="nombre"

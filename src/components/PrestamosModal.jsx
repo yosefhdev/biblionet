@@ -28,6 +28,9 @@ const PrestamosModal = ({ isOpen, onClose, initialData, accion }) => {
         onClose(); // Cerrar el modal
     };
 
+    // https://chatgpt.com/c/673fce33-a9d0-8000-ad11-0c44f24a9c4a
+    // Seguir ese chat para completar este modal
+
     const FormInput = ({ id, label, icon, ...props }) => (
         <div className="space-y-2">
             <Label htmlFor={id}>{label}</Label>
