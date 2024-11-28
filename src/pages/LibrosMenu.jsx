@@ -17,6 +17,7 @@ import LibrosModal from "~/components/LibrosModal"
 import { supabase } from "~/utils/supabase"
 
 const columnsLibros = [
+    { accessorKey: "foto", header: "Imagen", cell: "image" },
     // { accessorKey: "id", header: "ID", cell: "id" },
     { accessorKey: "titulo", header: "Título", cell: "text" },
     { accessorKey: "autor", header: "Autor", cell: "text" },

@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/alert-dialog"
 
 const columnsClientes = [
-    { accessorKey: "id", header: "ID", cell: "id" },
+    // { accessorKey: "id", header: "ID", cell: "id" },
     { accessorKey: "nombre", header: "Nombre", cell: "text" },
     { accessorKey: "apellido_paterno", header: "Apellido Paterno", cell: "text" },
     { accessorKey: "apellido_materno", header: "Apellido Materno", cell: "text" },

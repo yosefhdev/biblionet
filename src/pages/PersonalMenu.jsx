@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/alert-dialog"
 
 const columnsPersonal = [
-    { accessorKey: "id", header: "ID", cell: "id" },
+    // { accessorKey: "id", header: "ID", cell: "id" },
     { accessorKey: "nombre", header: "Nombre", cell: "text" },
     { accessorKey: "apellido", header: "Apellido", cell: "text" },
     { accessorKey: "cargo", header: "Cargo", cell: "text" },

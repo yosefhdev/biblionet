@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, Edit, Trash } from "lucide-react";
+import { ChevronDown, Edit, Trash, BookIcon } from "lucide-react";
 import { useState } from "react";
 
 const DataTable = ({ data, columns, onEdit, onDelete, tipoDato = null }) => {
@@ -69,6 +69,29 @@ const DataTable = ({ data, columns, onEdit, onDelete, tipoDato = null }) => {
                 return "bg-green-200 text-green-800";
             default:
                 return "bg-gray-200 text-gray-800";
+        }
+    };
+
+    const renderCell = (item, column) => {
+        switch (column.cell) {
+            case "image":
+                return item[column.accessorKey] ? (
+                    <img
+                        src={item[column.accessorKey]}
+                        alt={`Portada de ${item.titulo}`}
+                        className="w-12 h-16 object-cover rounded"
+                    />
+                ) : (
+                    <div className="w-12 h-16 bg-gray-200 flex items-center justify-center rounded">
+                        <BookIcon className="h-6 w-6 text-gray-400" />
+                    </div>
+                );
+            case "text":
+                return item[column.accessorKey];
+            case "id":
+                return <span className="text-gray-500 text-sm">{item[column.accessorKey]}</span>;
+            default:
+                return item[column.accessorKey];
         }
     };
 
@@ -129,7 +152,7 @@ const DataTable = ({ data, columns, onEdit, onDelete, tipoDato = null }) => {
                                             {item[column.accessorKey]}
                                         </Badge>
                                     ) : (
-                                        item[column.accessorKey]
+                                        renderCell(item, column)
                                     )}
                                 </TableCell>
                             ))}

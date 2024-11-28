@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { BookIcon, UserIcon, BookmarkIcon, CalendarIcon, HashIcon, CopyIcon } from "lucide-react"
+import { BookIcon, UserIcon, ImageIcon, BookmarkIcon, CalendarIcon, HashIcon, CopyIcon } from "lucide-react"
 
 const LibrosModal = ({ isOpen, onClose, initialData, accion, onSave }) => {
     const { register, handleSubmit, reset } = useForm({
@@ -63,7 +63,7 @@ const LibrosModal = ({ isOpen, onClose, initialData, accion, onSave }) => {
                             placeholder="Genero del libro"
                         />
                         <FormInput
-                            id="anio_publicacion"
+                            id="anio_pLibeoublicacion"
                             label="Año de Publicación"
                             icon={<CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />}
                             type="number"
@@ -85,6 +85,13 @@ const LibrosModal = ({ isOpen, onClose, initialData, accion, onSave }) => {
                             type="number"
                             placeholder="Número de copias"
                             min="0"
+                        />
+                        <FormInput
+                            id="foto"
+                            label="URL de la Foto"
+                            icon={<ImageIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />}
+                            placeholder="https://ejemplo.com/imagen.jpg"
+                            type="url"
                         />
                     </div>
                     <Button
