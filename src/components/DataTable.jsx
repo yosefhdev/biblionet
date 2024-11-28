@@ -1,5 +1,7 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import {
     Table,
     TableBody,
@@ -8,14 +10,13 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Edit, Trash } from "lucide-react";
 
-// eslint-disable-next-line no-unused-vars
-const DataTable = ({ data, columns, onEdit, onDelete, onAdd}) => {
-    
+import { Badge } from "@/components/ui/badge";
+import { ChevronDown, Edit, Trash } from "lucide-react";
+import { useState } from "react";
+
+const DataTable = ({ data, columns, onEdit, onDelete, tipoDato = null }) => {
+
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(5);
@@ -58,6 +59,18 @@ const DataTable = ({ data, columns, onEdit, onDelete, onAdd}) => {
 
     const totalPages = Math.ceil(sortedData.length / itemsPerPage);
 
+    const getStatusColor = (status) => {
+        switch (status) {
+            case "Pendiente":
+                return "bg-yellow-200 text-yellow-800";
+            case "Atrasado":
+                return "bg-red-200 text-red-800";
+            case "Completado":
+                return "bg-green-200 text-green-800";
+            default:
+                return "bg-gray-200 text-gray-800";
+        }
+    };
 
     return (
         <div>
@@ -111,17 +124,34 @@ const DataTable = ({ data, columns, onEdit, onDelete, onAdd}) => {
                         <TableRow key={item.id}>
                             {columns && columns.map((column) => (
                                 <TableCell key={column.accessorKey}>
-                                    {item[column.accessorKey]}
+                                    {column.accessorKey === "estatus" && tipoDato === "prestamo" ? (
+                                        <Badge className={getStatusColor(item[column.accessorKey])}>
+                                            {item[column.accessorKey]}
+                                        </Badge>
+                                    ) : (
+                                        item[column.accessorKey]
+                                    )}
                                 </TableCell>
                             ))}
                             <TableCell>
                                 <div className="flex space-x-2">
-                                    <Button variant="outline" size="icon" onClick={() => onEdit(item)}>
-                                        <Edit className="h-4 w-4" />
-                                    </Button>
-                                    <Button variant="outline" size="icon" onClick={() => onDelete(item)}>
-                                        <Trash className="h-4 w-4" />
-                                    </Button>
+                                    {tipoDato === 'prestamo' ? (
+                                        <Button variant="outline" size="icon" onClick={() => onEdit(item)}>
+                                            <Edit className="h-4 w-4" />
+                                            <span className="sr-only">Cambiar Estatus</span>
+                                        </Button>
+                                    ) : (
+                                        <>
+                                            <Button variant="outline" size="icon" onClick={() => onEdit(item)}>
+                                                <Edit className="h-4 w-4" />
+                                                <span className="sr-only">Editar</span>
+                                            </Button>
+                                            <Button variant="outline" size="icon" onClick={() => onDelete(item)}>
+                                                <Trash className="h-4 w-4" />
+                                                <span className="sr-only">Eliminar</span>
+                                            </Button>
+                                        </>
+                                    )}
                                 </div>
                             </TableCell>
                         </TableRow>
