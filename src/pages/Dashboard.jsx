@@ -15,7 +15,7 @@ import { PersonalMenu } from "./PersonalMenu"
 import { PrestamosMenu } from "./PrestamosMenu"
 
 function Dashboard() {
-    const [activeSection, setActiveSection] = useState("prestamos")
+    const [activeSection, setActiveSection] = useState("libros")
     const [isMenuOpen, setIsMenuOpen] = useState(false)
 
     const handleLogout = () => {

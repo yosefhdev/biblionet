@@ -12,10 +12,10 @@ import {
 } from "@/components/ui/table";
 
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, Edit, Trash, BookIcon } from "lucide-react";
+import { ChevronDown, Edit, Trash, BookIcon, Eye } from "lucide-react";
 import { useState } from "react";
 
-const DataTable = ({ data, columns, onEdit, onDelete, tipoDato = null }) => {
+const DataTable = ({ data, columns, onEdit, onDelete, onView, tipoDato = null }) => {
 
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
@@ -72,6 +72,7 @@ const DataTable = ({ data, columns, onEdit, onDelete, tipoDato = null }) => {
         }
     };
 
+
     const renderCell = (item, column) => {
         switch (column.cell) {
             case "image":
@@ -87,6 +88,9 @@ const DataTable = ({ data, columns, onEdit, onDelete, tipoDato = null }) => {
                     </div>
                 );
             case "text":
+                if (column.accessorKey === "libros" && Array.isArray(item[column.accessorKey])) {
+                    return item[column.accessorKey].map(libro => libro.titulo).join(", ");
+                }
                 return item[column.accessorKey];
             case "id":
                 return <span className="text-gray-500 text-sm">{item[column.accessorKey]}</span>;
@@ -159,10 +163,16 @@ const DataTable = ({ data, columns, onEdit, onDelete, tipoDato = null }) => {
                             <TableCell>
                                 <div className="flex space-x-2">
                                     {tipoDato === 'prestamo' ? (
-                                        <Button variant="outline" size="icon" onClick={() => onEdit(item)}>
-                                            <Edit className="h-4 w-4" />
-                                            <span className="sr-only">Cambiar Estatus</span>
-                                        </Button>
+                                        <div className="flex gap-2">
+                                            <Button variant="outline" size="icon" onClick={() => onEdit(item)}>
+                                                <Edit className="h-4 w-4" />
+                                                <span className="sr-only">Cambiar Estatus</span>
+                                            </Button>
+                                            <Button variant="outline" size="icon" onClick={() => onView(item)}>
+                                                <Eye className="h-4 w-4" />
+                                                <span className="sr-only">Ver Detalles</span>
+                                            </Button>
+                                        </div>
                                     ) : (
                                         <>
                                             <Button variant="outline" size="icon" onClick={() => onEdit(item)}>

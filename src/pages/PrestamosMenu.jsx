@@ -7,12 +7,14 @@ import CambiarEstatusModal from "~/components/CambiarEstatusModal"
 import PrestamosModal from "~/components/PrestamosModal"
 import { supabase } from "~/utils/supabase"
 import { updateLoanStatus } from "~/utils/updateLoanStatus"
+import PrestamosDetalleModal from "./PrestamosDetalleModal"
 
 export function PrestamosMenu() {
     const [dataPrestamos, setDataPrestamos] = useState([])
     const [modalState, setModalState] = useState({ isOpen: false, data: null, action: null })
     const [isLoading, setIsLoading] = useState(true)
     const [changeStatusModal, setChangeStatusModal] = useState({ isOpen: false, prestamo: null })
+    const [detalleModal, setDetalleModal] = useState({ isOpen: false, prestamo: null })
 
     const columnsPrestamos = [
         // { accessorKey: "id", header: "ID", cell: "id" },
@@ -23,8 +25,6 @@ export function PrestamosMenu() {
         { accessorKey: "libros", header: "Libros", cell: "text" },
         { accessorKey: "estatus", header: "Estatus", cell: "text" },
     ]
-
-
 
     useEffect(() => {
         async function updateAndFetch() {
@@ -45,42 +45,32 @@ export function PrestamosMenu() {
                 estatus,
                 clientes (id, nombre, apellido_paterno),
                 personal (id, nombre, apellido),
-                prestamos_libros (libro_id)
+                prestamos_libros (
+                    libros (id, titulo, autor, foto)
+                )
             `)
 
         if (error) {
             console.log('error', error)
         } else {
-            const formattedData = await Promise.all(data.map(async (prestamo) => {
-                const { data: librosData, error: librosError } = await supabase
-                    .from('libros')
-                    .select('titulo')
-                    .in('id', prestamo.prestamos_libros.map(pl => pl.libro_id))
-
-                if (librosError) {
-                    console.log('error fetching libros', librosError)
-                    return null
-                }
-
-                return {
-                    id: prestamo.id,
-                    cliente_nombre: `${prestamo.clientes.nombre} ${prestamo.clientes.apellido_paterno}`,
-                    personal_nombre: `${prestamo.personal.nombre} ${prestamo.personal.apellido}`,
-                    fecha_prestamo: prestamo.fecha_prestamo,
-                    fecha_devolucion: prestamo.fecha_devolucion,
-                    libros: librosData.map(libro => libro.titulo).join(', '),
-                    estatus: prestamo.estatus
-                }
+            const formattedData = data.map((prestamo) => ({
+                id: prestamo.id,
+                cliente_nombre: `${prestamo.clientes.nombre} ${prestamo.clientes.apellido_paterno}`,
+                personal_nombre: `${prestamo.personal.nombre} ${prestamo.personal.apellido}`,
+                fecha_prestamo: prestamo.fecha_prestamo,
+                fecha_devolucion: prestamo.fecha_devolucion,
+                estatus: prestamo.estatus,
+                libros: prestamo.prestamos_libros.map(pl => pl.libros)
             }))
 
-            setDataPrestamos(formattedData.filter(Boolean))
+            setDataPrestamos(formattedData)
         }
         setIsLoading(false)
-    }
+    };
 
     const handleAdd = () => {
         setModalState({ isOpen: true, data: null, action: "add" })
-    }
+    };
 
     const handleSave = async (data) => {
         setIsLoading(true)
@@ -184,6 +174,10 @@ export function PrestamosMenu() {
         setChangeStatusModal({ isOpen: false, prestamo: null })
     }
 
+    const handleViewDetails = (prestamo) => {
+        setDetalleModal({ isOpen: true, prestamo })
+    }
+
     return (
         <Card>
             <CardHeader className="flex flex-row justify-between items-center">
@@ -204,6 +198,7 @@ export function PrestamosMenu() {
                         headers={Object.keys(dataPrestamos[0]).filter(key => key !== 'id')}
                         onAdd={handleAdd}
                         onEdit={handleChangeStatus}
+                        onView={handleViewDetails}
                         tipoDato="prestamo"
                     />
                 ) : (
@@ -220,6 +215,11 @@ export function PrestamosMenu() {
                 onClose={() => setChangeStatusModal({ isOpen: false, prestamo: null })}
                 onSave={handleSaveStatus}
                 currentStatus={changeStatusModal.prestamo?.estatus}
+            />
+            <PrestamosDetalleModal
+                isOpen={detalleModal.isOpen}
+                onClose={() => setDetalleModal({ isOpen: false, prestamo: null })}
+                prestamo={detalleModal.prestamo}
             />
         </Card>
     )

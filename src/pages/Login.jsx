@@ -24,9 +24,9 @@ function Login() {
         e.preventDefault();
         console.log('Intentando iniciar sesión con:', email);
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
             if (error) throw error;
-            console.log('Respuesta de Supabase:', data);
+            // console.log('Respuesta de Supabase:', data);
             navigate('/dashboard');
         } catch (error) {
             console.error('Error detallado:', error);
@@ -94,13 +94,13 @@ function Login() {
                     </CardFooter>
                 </form>
             </Card>
-            <div className='flex flex-col'>
+            {/* <div className='flex flex-col'>
                 <Link to={"/dashboard"}>
                     <button type="button" >
                         Ir a Dashboard
                     </button>
                 </Link>
-            </div>
+            </div> */}
         </div>
     );
 }
